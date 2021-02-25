@@ -9,7 +9,7 @@ MongoClient.connect(MONGO_URL, (err, db) => {
   const gifCollection = db.db("test").collection("gifs");
 
   // Change this to your own greeting
-  const MY_MESSAGE = "frogs?";
+  const MY_MESSAGE = "frogs > toads";
 
   // Create our app and configure the view templating engine
   const app = express();
