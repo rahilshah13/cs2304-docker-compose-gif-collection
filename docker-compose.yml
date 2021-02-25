@@ -1,0 +1,24 @@
+services:
+  app:
+    image: node:12-alpine
+    command: npm run dev
+    working_dir: /usr/local/app
+    volumes:
+      - ./:/usr/local/app
+    ports:
+      - 3000:3000
+ 
+  mongo:
+    image: mongo:4.4
+    volumes:
+      - gif-db:/data/db
+
+  mongo-express:
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+    ports:
+      - 8080:8081
+volumes:
+  gif-db:
