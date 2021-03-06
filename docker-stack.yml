@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   app:
-    image: rahilshah/pink-app
+    image: rahilshah/gif-collection
     command: npm run dev
     working_dir: /usr/local/app
     volumes:
