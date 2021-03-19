@@ -1,21 +1,32 @@
 version: "3.8"
 services:
   app:
-    image: rahilshah/gif-collection
+    image: rahilshah/gif-collection:latest
     ports:
-      - 3000:3000
+        - 3000:3000
+    deploy:
+        replicas: 3
+        update_config:
+            delay: 10s
+        placement:
+            constraints:
+                - "node.role==worker"
  
   mongo:
     image: mongo:4.4
-    volumes:
-      - gif-db:/data/db
+    deploy:
+        placement:
+            constraints:
+                - "node.role==worker"
 
   mongo-express:
     image: mongo-express
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_MONGODB_PORT=27017
+        - ME_CONFIG_MONGODB_SERVER=mongo
+        - ME_CONFIG_MONGODB_PORT=27017
     ports:
-      - 8080:8081
-volumes:
-  gif-db:
+        - 8080:8081
+    deploy:
+        placement:
+            constraints:
+                - "node.role==worker"
