@@ -5,9 +5,12 @@ services:
     working_dir: /usr/local/app
     volumes:
       - ./:/usr/local/app
+      - ./mongo-config-sample.json:/run/secrets/mongo-config.json
     ports:
       - 3000:3000
- 
+    environment:
+      MONGO_CONFIG_FILE: /sample/location/mongo-config.json
+      CUSTOM_MESSAGE: yoooo what up
   mongo:
     image: mongo:4.4
     volumes:

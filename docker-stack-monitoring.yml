@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  prometheus:
+    image: prom/prometheus
+    networks:
+      - proxy
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    deploy:
+      labels:
+        traefik.http.routers.prometheus.rule: Host(`prometheus.localhost`)
+        traefik.http.services.prometheus.loadbalancer.server.port: 9090
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - proxy
+    deploy:
+      labels:
+        traefik.http.routers.grafana.rule: Host(`grafana.localhost`)
+        traefik.http.services.grafana.loadbalancer.server.port: 3000
+volumes:
+  prometheus-data:
+  grafana-storage:
+networks:
+  proxy:
+    external: true
+  default:
+    name: monitoring

@@ -3,6 +3,7 @@ const MongoClient = require("mongodb").MongoClient;
 const MONGO_URL = "mongodb://mongo:27017";
 const prometheusClient = require("prom-client");
 const prometheusMiddleware = require("express-prometheus-middleware");
+const fs = require("fs");
 
 ////////////////// prometheus metrics
 const gifsAddedCounter = new prometheusClient.Counter({
@@ -15,15 +16,21 @@ const mongoQuerySummary = new prometheusClient.Summary({
     help: "Query times to get the next Mongo image",
 });
 /////////////////////////////////
-
-MongoClient.connect(MONGO_URL, (err, db) => {
+function getConnectionString() {
+  const configLocation = process.env.MONGO_CONFIG_FILE || "/run/secrets/mongo-config.json";
+  if (!fs.existsSync(configLocation))
+    throw new Error("No secret config found");
+  return require(configLocation).connectionString;
+}
+/////////////
+MongoClient.connect(getConnectionString(), (err, db) => {
   if (err) throw err;
 
   console.log("Database has connected!");
   const gifCollection = db.db("test").collection("gifs");
 
   // Change this to your own greeting
-  const MY_MESSAGE = "frogs?";
+  const MY_MESSAGE = process.env.CUSTOM_MESSAGE || "NO MESSAGE PROVIDED";
 
   // Create our app and configure the view templating engine
   const app = express();

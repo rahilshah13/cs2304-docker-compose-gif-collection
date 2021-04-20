@@ -2,31 +2,32 @@ version: "3.8"
 services:
   app:
     image: rahilshah/gif-collection:latest
-    ports:
-        - 3000:3000
     deploy:
-        replicas: 3
-        update_config:
-            delay: 10s
-        placement:
-            constraints:
-                - "node.role==worker"
- 
+      labels:
+        traefik.http.routers.app.rule: Host(`app.localhost`)
+        traefik.http.services.app.loadbalancer.server.port: 3000
+    networks:
+      - proxy
   mongo:
     image: mongo:4.4
+    networks:
+      - proxy
     deploy:
-        placement:
-            constraints:
-                - "node.role==worker"
-
+      replicas: 1
   mongo-express:
     image: mongo-express
     environment:
         - ME_CONFIG_MONGODB_SERVER=mongo
         - ME_CONFIG_MONGODB_PORT=27017
-    ports:
-        - 8080:8081
     deploy:
-        placement:
-            constraints:
-                - "node.role==worker"
+      labels:
+        traefik.http.routers.mongo-express.rule: Host(`mongo-express.localhost`)
+        traefik.http.services.mongo-express.loadbalancer.server.port: 8081
+    networks:
+      - proxy
+networks:
+  proxy:
+    external: true
+  #monitoring:
+  #  external: true
+
